@@ -1,3 +1,4 @@
+'''Python interface'''
 import sys
 
 
