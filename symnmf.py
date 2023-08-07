@@ -1,4 +1,4 @@
-'''Python interface'''
+"""Python interface"""
 import sys
 import numpy as np
 import math
@@ -87,6 +87,22 @@ def check_inputs(k, goal, input_file):
     if ((not k.isnumeric()) or (not goal in ["symnmf", "sym", "ddg", "norm"]) or (not input_file.endswith(".txt"))):
         print(ERROR_MSG)
         sys.exit()
+
+import numpy as np
+from numpy.linalg import norm
+
+
+def input_loader(filename):
+    """load input file as list of strings
+    and turns lines into list of points"""
+    try:
+        with open(filename, "r") as f:
+            lines = f.readlines()
+    except:
+        print("An Error Has Occurred")
+        sys.exit()
+
+    return [np.array((float(num) for num in line.split(","))) for line in lines]
 
 
 def main(args=sys.argv):
