@@ -1,4 +1,5 @@
 /*C interface*/
+#include<string.h>
 #include "symnmf.h" 
 /* gives us file loading, array tools,
  stdlib.h, stdio.h, math.h */
@@ -61,7 +62,7 @@ double **norm(double **sym_mat, double **ddg_mat, int line_num){
     }
 
     /* multiply matricies */
-    normalized_sym = (double *)malloc(line_num * sizeof(double));
+    normalized_sym = (double **)malloc(line_num * sizeof(double *));
     pointer_check((void *)normalized_sym, GENERAL_ERROR);
     for (i = 0; i < line_num; i++)
     {
@@ -75,20 +76,37 @@ double **norm(double **sym_mat, double **ddg_mat, int line_num){
     return normalized_sym;
 }
 
-/**
- * prints a 2D matrix of doubles
+/* prints a 2D matrix of doubles
 */
 void matrix_printer(double **matrix, int rows, int cols){
+    int i, j;
+    for ( i = 0; i < rows; i++)
+    {
+        for ( j = 0; j < cols; j++)
+        {
+            if (j!=0){
+                printf(", ");
+            }
+            printf("%f", matrix[i][j]);
+        }
+        printf("\n");
+    }
     return;
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
-    int i, j, dim, line_num;
-    char *goal = argv[1], *filename = argv[2];
-    double **points, **sym_mat, **ddg_mat, **result;
+    int dim, line_num;
+    char *goal, *filename;
+    double **points, **sym_mat, **ddg_mat, **norm_mat;
     char *file_buffer, **lines;
-    
+    if (argc < 3){
+        printf("%s", GENERAL_ERROR);
+        exit(1);
+    }
+    goal = argv[1];
+    filename = argv[2];
+
     /* file reading and parsing to points*/
     file_buffer = read_file(filename); 
     dim = get_dimention(file_buffer);
@@ -96,28 +114,29 @@ int main(int argc, char *argv)
     lines = split_to_lines(file_buffer, line_num);
     points = lines_to_points(lines, line_num, dim);
 
-    /* free up memory */
-    free_2d(lines, line_num);
-    /* don't need to free file_buffer, becase lines point to the same location */
-
     sym_mat = sym(points, line_num, dim);
-    if (goal == "sym"){
-        result = sym_mat;
+    free_2d((void *)points, line_num);
+    if (strcmp(goal, "sym") == 0){
+        norm_mat = sym_mat;
+        matrix_printer(sym_mat, line_num, line_num);
+        free_2d((void *)sym_mat, line_num);
     }
-    if (goal == "ddg")
-    {
-        result = ddg(sym_mat, line_num);
-        free_2d(sym_mat, line_num);
-    }
-    if (goal == "norm")
+    else if (strcmp(goal, "ddg") == 0)
     {
         ddg_mat = ddg(sym_mat, line_num);
-        result = norm(sym_mat, ddg_mat, line_num);
-        free_2d(sym_mat, line_num);
-        free_2d(ddg_mat, line_num);
+        matrix_printer(ddg_mat, line_num, line_num);
+        free_2d((void *)sym_mat, line_num);
+        free_2d((void *)ddg_mat, line_num);
+    }
+    else if (strcmp(goal, "norm") == 0)
+    {
+        ddg_mat = ddg(sym_mat, line_num);
+        norm_mat = norm(sym_mat, ddg_mat, line_num);
+        matrix_printer(norm_mat, line_num, line_num);
+        free_2d((void *)sym_mat, line_num);
+        free_2d((void *)ddg_mat, line_num);
+        free_2d((void *)norm_mat, line_num);
     }
     /* print and free all memory */
-    matrix_printer(result, line_num, line_num);
-    free_2d(result, line_num);
     return 1;
 }

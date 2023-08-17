@@ -76,6 +76,7 @@ double **point_array_copy(double **points, int k, int dim)
     return new_points;
 }
 
+
 /* Sum over the columns of a 2D array. 
  * sum_columns({{1,5},{0,3}}) = {6, 3}*/
 double* sum_columns(double **arr, int rows, int cols){
@@ -89,6 +90,7 @@ double* sum_columns(double **arr, int rows, int cols){
         }
         sum_cols[i] = curr_col;
     }
+    return sum_cols;
 }
 
 /* Squared Euclidian distance between p and q.
