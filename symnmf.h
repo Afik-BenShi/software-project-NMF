@@ -112,12 +112,14 @@ double distance(double *p, double *q, int dim){
 
 /* Reads the file and saves it to a string.
     * Checks new pointers */
-char *read_file()
+char *read_file(char *filename)
 {
     char *buffer;
     long size;
-    FILE *file = stdin;
+    FILE *file = NULL;
+    file = fopen(filename, "r");
     pointer_check((void *)file, GENERAL_ERROR);
+    
     fseek(file, 0L, SEEK_END); /* go to end of file*/
     size = ftell(file);        /* save the size*/
     fseek(file, 0L, SEEK_SET); /* go to start of file*/
