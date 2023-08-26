@@ -2,10 +2,11 @@
 import sys
 import numpy as np
 import math
+import symnmfmodule
 
 MAX_ITER = 300
 EPSILON = math.e - 4
-
+ERROR_MSG = "An Error Has Occurred"
 
 def calculate_average(matrix, rows, cols):
     '''calculate_average calculates the average of a matrix.'''
@@ -23,7 +24,7 @@ def multiply_matrices(matrix1, matrix2):
     n2, m2 = len(matrix2), len(matrix2[0])  # dimensions of matrix2 (n x k)
     
     if m1 != n2:
-        print("An Error Accured!")
+        print(ERROR_MSG)
         exit(1)
     
     result = [[0] * m2 for _ in range(n1)]
@@ -39,7 +40,7 @@ def multiply_matrices(matrix1, matrix2):
 def subtract_matrices(matrix1, matrix2):
     '''subtract_matrices calculates matrix substraction.'''
     if len(matrix1) != len(matrix2) or len(matrix1[0]) != len(matrix2[0]):
-        print("An Error Accured!")
+        print(ERROR_MSG)
         exit(1)
 
     result = [[0] * len(matrix1[0]) for _ in range(len(matrix1))]
@@ -53,7 +54,7 @@ def subtract_matrices(matrix1, matrix2):
 def divide_matrices(matrix1, matrix2):
     '''divide_matrices calculates matrix division.'''
     if len(matrix1) != len(matrix2) or len(matrix1[0]) != len(matrix2[0]):
-        print("An Error Accured!")
+        print(ERROR_MSG)
         exit(1)
     
     result = []
@@ -61,7 +62,7 @@ def divide_matrices(matrix1, matrix2):
         row = []
         for j in range(len(matrix1[0])):
             if matrix2[i][j] == 0:
-                print("An Error Accured!")
+                print(ERROR_MSG)
                 exit(1)
             row.append(matrix1[i][j] / matrix2[i][j])
         result.append(row)
@@ -92,7 +93,7 @@ def init_decomposition_matrix(norm_matrix,k):
     return initial_matrix
 
 def frob_norm(matrix):
-    ''' frob_norm calaculates the frobenius norm of a given matrix'''
+    '''frob_norm calaculates the frobenius norm of a given matrix.'''
     return
 
 
@@ -117,12 +118,29 @@ def update_decomposition_matrix(initial_decomp_matrix, norm_matrix):
         decomp_matrix = new_decomp_matrix
     
     return decomp_matrix
+
+def find_decomposition_matrix(norm_matrix, k):
+    ''' find_decomposition_matrix findes the decomposition matrix H.'''
+    initial_matrix = init_decomposition_matrix(norm_matrix, k)
+    updated_matrix = update_decomposition_matrix(initial_matrix, norm_matrix)
+    return updated_matrix
+
+def check_inputs(k, goal, input_file):
+    ''' check_inputs validates the required inputs in main function.'''
+    if ((not k.isnumeric()) or (not goal in ["symnmf", "sym", "ddg", "norm"]) or (not input_file.endswith(".txt"))):
+        print(ERROR_MSG)
+        exit(1)
         
 
 def main(args=sys.argv):
+    if (args < 3):
+        print(ERROR_MSG)
+        exit(1)
+
     k = args[1]
     goal = args[2]
     input_file = args[3]
+    check_inputs(k, goal, input_file)
 
     if goal == "symnmf":
         # symnmf as described in sec 1 in the pdf
