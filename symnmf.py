@@ -25,7 +25,7 @@ def multiply_matrices(matrix1, matrix2):
     
     if m1 != n2:
         print(ERROR_MSG)
-        exit(1)
+        sys.exit()
     
     result = [[0] * m2 for _ in range(n1)]
     
@@ -41,7 +41,7 @@ def subtract_matrices(matrix1, matrix2):
     '''subtract_matrices calculates matrix substraction.'''
     if len(matrix1) != len(matrix2) or len(matrix1[0]) != len(matrix2[0]):
         print(ERROR_MSG)
-        exit(1)
+        sys.exit()
 
     result = [[0] * len(matrix1[0]) for _ in range(len(matrix1))]
     
@@ -55,7 +55,7 @@ def divide_matrices(matrix1, matrix2):
     '''divide_matrices calculates matrix division.'''
     if len(matrix1) != len(matrix2) or len(matrix1[0]) != len(matrix2[0]):
         print(ERROR_MSG)
-        exit(1)
+        sys.exit()
     
     result = []
     for i in range(len(matrix1)):
@@ -63,7 +63,7 @@ def divide_matrices(matrix1, matrix2):
         for j in range(len(matrix1[0])):
             if matrix2[i][j] == 0:
                 print(ERROR_MSG)
-                exit(1)
+                sys.exit()
             row.append(matrix1[i][j] / matrix2[i][j])
         result.append(row)
     
@@ -94,7 +94,7 @@ def init_decomposition_matrix(norm_matrix,k):
 
 def frob_norm(matrix):
     '''frob_norm calaculates the frobenius norm of a given matrix.'''
-    return
+    return np.linalg.norm(np.array(matrix), 'fro')
 
 
 def update_decomposition_matrix(initial_decomp_matrix, norm_matrix):
@@ -129,13 +129,13 @@ def check_inputs(k, goal, input_file):
     ''' check_inputs validates the required inputs in main function.'''
     if ((not k.isnumeric()) or (not goal in ["symnmf", "sym", "ddg", "norm"]) or (not input_file.endswith(".txt"))):
         print(ERROR_MSG)
-        exit(1)
-        
+        sys.exit()
+
 
 def main(args=sys.argv):
     if (args < 3):
         print(ERROR_MSG)
-        exit(1)
+        sys.exit()
 
     k = args[1]
     goal = args[2]
