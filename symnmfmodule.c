@@ -30,56 +30,97 @@ static PyObject *sym_wrapper(PyObject *self, PyObject *args)
 
 static PyObject *ddg_wrapper(PyObject *self, PyObject *args)
 {
-    PyObject *Py_sym;
-    if (!PyArg_ParseTuple(args, "O", &Py_sym))
+    PyObject *Py_points;
+    if (!PyArg_ParseTuple(args, "O", &Py_points))
     {
         return NULL;
     }
-    int line_num = PyObject_Length(Py_sym);
-    if (line_num < 0)
+    int *shape = get_2d_shape(Py_points);
+    if (shape == NULL)
     {
         return NULL;
     }
 
-    /* convert to matricies */
-    double **sym_mat = convert_to_double_array(Py_sym);
+    /* convert to matrix */
+    double **points = convert_to_double_array(Py_points);
+
+    /* call sym */
+    double **sym_mat = sym(points, shape[0], shape[1]);
+    free_2d((void *)points, shape[0]);
 
     /* call ddg */
-    double **ddg_mat = ddg(sym_mat, line_num);
-    free_2d((void *)sym_mat, line_num);
+    double **ddg_mat = ddg(sym_mat, shape[0]);
+    free_2d((void *)sym_mat, shape[0]);
 
     /* convert to python list */
-    PyObject *Py_ddg = convert_to_python_object(ddg_mat, line_num, line_num);
-    free_2d((void *)ddg_mat, line_num);
+    PyObject *Py_ddg = convert_to_python_object(ddg_mat, shape[0], shape[0]);
+    free_2d((void *)ddg_mat, shape[0]);
+    free(shape);
     return Py_ddg;
 }
 
 static PyObject *norm_wrapper(PyObject *self, PyObject *args)
 {
-    PyObject *Py_sym, *Py_ddg;
-    if (!PyArg_ParseTuple(args, "OO", &Py_sym, &Py_ddg))
+    PyObject *Py_points;
+    if (!PyArg_ParseTuple(args, "O", &Py_points))
     {
         return NULL;
     }
-    int line_num = PyObject_Length(Py_ddg);
-    if (line_num < 0)
+    int *shape = get_2d_shape(Py_points);
+    if (shape == NULL)
+    {
+        return NULL;
+    }
+
+    /* convert to matrix */
+    double **points = convert_to_double_array(Py_points);
+
+    /* call sym */
+    double **sym_mat = sym(points, shape[0], shape[1]);
+    free_2d((void *)points, shape[0]);
+
+    /* call ddg */
+    double **ddg_mat = ddg(sym_mat, shape[0]);
+
+    /* call norm */
+    double **norm_mat = norm(sym_mat, ddg_mat, shape[0]);
+    free_2d((void *)sym_mat, shape[0]);
+    free_2d((void *)ddg_mat, shape[0]);
+
+    /* convert to python list*/
+    PyObject *Py_norm = convert_to_python_object(norm_mat, shape[0], shape[0]);
+    free_2d((void *)norm_mat, shape[0]);
+    free(shape);
+    return Py_norm;
+}
+
+static PyObject *symnmf_wrapper(PyObject *self, PyObject *args)
+{
+    PyObject *Py_init_decomp, *Py_norm;
+    double epsilon;
+    if (!PyArg_ParseTuple(args, "OOd", &Py_init_decomp, &Py_norm, epsilon))
+    {
+        return NULL;
+    }
+    int *decomp_shape = get_2d_shape(Py_init_decomp);
+    if (decomp_shape == NULL)
     {
         return NULL;
     }
 
     /* convert to matricies */
-    double **sym_mat = convert_to_double_array(Py_sym);
-    double **ddg_mat = convert_to_double_array(Py_ddg);
+    double **init_decomp_mat = convert_to_double_array(Py_init_decomp);
+    double **norm_mat = convert_to_double_array(Py_norm);
 
-    /* call norm */
-    double **norm_mat = norm(sym_mat, ddg_mat, line_num);
-    free_2d((void *)sym_mat, line_num);
-    free_2d((void *)ddg_mat, line_num);
+    double **decomp_mat = symnmf(init_decomp_mat, norm_mat, decomp_shape[0], decomp_shape[1], epsilon);
+    free_2d((void *)norm_mat, decomp_shape[0]);
+    free_2d((void *)init_decomp_mat, decomp_shape[0]);
 
     /* convert to python list*/
-    PyObject *Py_norm = convert_to_python_object(norm_mat, line_num, line_num);
-    free_2d((void *)norm_mat, line_num);
-    return Py_norm;
+    PyObject *Py_decomp = convert_to_python_object(decomp_mat, decomp_shape[0], decomp_shape[1]);
+    free_2d((void *)decomp_mat, decomp_shape[0]);
+    free(decomp_shape);
+    return Py_decomp;
 }
 
 /* module's function table*/
@@ -101,6 +142,12 @@ static PyMethodDef SymNMF_FunctionsTable[] = {
         norm_wrapper,                                                                  /* C wrapper function*/
         METH_VARARGS,                                                                  /* received variable args (but really just 1) */
         "Calculate the normalized similarity matrix\naccording to sec 1.3 in the PDF " /* documentation */
+    },
+    {
+        "symnmf",                                                                        /* name exposed to Python */
+        symnmf_wrapper,                                                                  /* C wrapper function*/
+        METH_VARARGS,                                                                    /* received variable args (but really just 1) */
+        "Calculate the optimized decomposition matrix\naccording to sec 1.4 in the PDF " /* documentation */
     },
     {NULL, NULL, 0, NULL}};
 
