@@ -1,17 +1,17 @@
-# ifndef UTILS_H_
-# define UTILS_H_
-# include <stdio.h>
-# include <stdlib.h>
-# include <math.h>
-# include <string.h>
+#ifndef UTILS_H_
+#define UTILS_H_
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
 
-# ifndef GENERAL_ERROR
-# define GENERAL_ERROR ("An Error Has Occurred\n")
-# endif
+#ifndef GENERAL_ERROR
+#define GENERAL_ERROR ("An Error Has Occurred\n")
+#endif
 /* ============ Array Tools ============ */
 
 /* prints a 2D matrix of doubles
-*/
+ */
 void matrix_printer(double **matrix, int rows, int cols);
 
 /*  frees 2d arrays. Array needs to be cast into void** */
@@ -29,9 +29,9 @@ double **empty_points_arr(int len, int dim);
  * Checks new pointers */
 double **point_array_copy(double **points, int k, int dim);
 
-/* Sum over the columns of a 2D array. 
+/* Sum over the columns of a 2D array.
  * sum_columns({{1,5},{0,3}}) = {6, 3}*/
-double* sum_columns(double **arr, int rows, int cols);
+double *sum_columns(double **arr, int rows, int cols);
 
 /* Squared Euclidian distance between p and q.
  * Formula d=sqrt(pow(p[0]-q[0], 2) + ... + pow(p[n]-q[n], 2)) */
@@ -41,29 +41,22 @@ double distance(double *p, double *q, int dim);
 
 /* calculate_average return the average value of the matrix
  * calculate_average({{1,5},{0,4}}) = 2.5 */
-double calculate_average(double** matrix, int rows, int cols);
+double calculate_average(double **matrix, int rows, int cols);
 
-void multiply_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result);
+void multiply_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result);
 
-void subtract_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result);
+void subtract_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result);
 
-void divide_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result);
+void divide_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result);
 
-void transpose_matrix(double** matrix, int rows, int cols, double** result);
+void transpose_matrix(double **matrix, int rows, int cols, double **result);
 
-double frob_norm(double** matrix, int rows, int cols);
-
-void update_decomposition_matrix(double** initial_decomp_matrix, double** norm_matrix, int n, int k, double beta, double epsilon, double** result);
-
-void init_decomposition_matrix(double** norm_matrix, int n, int k, double** initial_matrix);
-
-
-
+double frob_norm_sq(double **matrix, int rows, int cols);
 
 /* ============ File Read and String Manipulation ============*/
 
 /* Reads the file and saves it to a string.
-    * Checks new pointers */
+ * Checks new pointers */
 char *read_file(char *filename);
 
 /* Counts the dimention of the points
@@ -90,4 +83,4 @@ double *read_point(char *line, int dim);
  * as the data is not copied to a new location in memory.
  * Checks new pointers */
 double **lines_to_points(char **lines, int line_num, int dim);
-# endif
+#endif

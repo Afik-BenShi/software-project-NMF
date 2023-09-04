@@ -1,7 +1,7 @@
 /*C header file*/
-# ifndef SYMNMF_H_
-# define SYMNMF_H_
-# include "utils.h"
+#ifndef SYMNMF_H_
+#define SYMNMF_H_
+#include "utils.h"
 
 /* Calculates the similarity matrix from the points
  * according to sec 1.1 in the PDF. */
@@ -17,5 +17,5 @@ double **norm(double **sym_mat, double **ddg_mat, int line_num);
 
 /* Calculate the decomposition matrix
  * according to sec 1.4 in the PDF. */
-double** symnmf(double** norm_matrix, int n, int k, double epsilon);
-# endif
+double **symnmf(double **initial_matrix, double **norm_matrix, int n, int k, double epsilon);
+#endif
