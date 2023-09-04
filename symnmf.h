@@ -17,5 +17,5 @@ double **norm(double **sym_mat, double **ddg_mat, int line_num);
 
 /* Calculate the decomposition matrix
  * according to sec 1.4 in the PDF. */
-double **symnmf(double **initial_matrix, double **norm_matrix, int n, int k, double epsilon);
+double **symnmf(double **initial_decomp_matrix, double **norm_matrix, int n, int k, double epsilon);
 #endif

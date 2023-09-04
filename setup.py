@@ -4,10 +4,10 @@ from setuptools import Extension, setup
 module = Extension(
     "symnmf",
     sources=[
-        'symnmf.h', 
-        'Py_utils.h', 
+        './impls/utils_impl.c',
+        './impls/symnmf_impl.c',
         './impls/Py_utils_impl.c', 
-        'symnmfmodule.c'
+        'symnmfmodule.c',
     ]
 )
 setup(

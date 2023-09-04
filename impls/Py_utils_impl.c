@@ -1,17 +1,5 @@
 #include "../Py_utils.h"
 
-int *get_2d_shape(PyObject *lst)
-{
-    int shape[2] = {0, 0};
-    shape[0] = PyObject_Length(lst);
-    shape[1] = shape[0] > 0 ? (PyObject_GetItem(lst, 0)) : 0;
-    if (shape[0] < 0 || shape[1] < 0)
-    { /* Assert there are lines in the list */
-        return NULL;
-    }
-    return shape;
-}
-
 /* Function to convert double** to Python object */
 PyObject *convert_to_python_object(double **arr, int rows, int cols)
 {

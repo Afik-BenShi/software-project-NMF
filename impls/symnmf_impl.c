@@ -76,19 +76,23 @@ double **norm(double **sym_mat, double **ddg_mat, int line_num)
 
 int MAX_ITER = 300;
 
-double **symnmf(double **initial_matrix, double **norm_matrix, int line_num, int k, double epsilon)
+/**
+ * calculate the change between iterations of the decomposition matrix
+ * and rerurns the squared Frovinious norm of the delta
+ */
+double normedDiff(double **decomp_matrix, double **new_decomp_matrix, int n, int k)
 {
-    double **result_matrix = (double **)malloc(line_num * sizeof(double *));
-    for (int i = 0; i < line_num; i++)
+    double squared_norm;
+    double **diff = (double **)malloc(n * sizeof(double *));
+    for (int i = 0; i < n; i++)
     {
-        result_matrix[i] = (double *)malloc(k * sizeof(double));
+        diff[i] = (double *)malloc(k * sizeof(double));
     }
+    subtract_matrices(new_decomp_matrix, n, k, decomp_matrix, n, k, diff);
 
-    update_decomposition_matrix(initial_matrix, norm_matrix, line_num, k, epsilon, result_matrix);
-
-    free_2d(initial_matrix, line_num);
-
-    return result_matrix;
+    squared_norm = frob_norm_sq(diff, n, k);
+    free_2d((void *)diff, n);
+    return squared_norm;
 }
 
 void update_decomposition_matrix(double **initial_decomp_matrix, double **norm_matrix, int n, int k, double epsilon, double **result)
@@ -172,24 +176,20 @@ void update_decomposition_matrix(double **initial_decomp_matrix, double **norm_m
     free(denominator);
     free(decomp_matrix);
     free(new_decomp_matrix);
-    free_2d(decomp_transpose, k);
+    free_2d((void *)decomp_transpose, k);
 }
 
-/**
- * calculate the change between iterations of the decomposition matrix
- * and rerurns the squared Frovinious norm of the delta
- */
-double normedDiff(double **decomp_matrix, double **new_decomp_matrix, int n, int k)
+double **symnmf(double **initial_matrix, double **norm_matrix, int line_num, int k, double epsilon)
 {
-    double squared_norm;
-    double **diff = (double **)malloc(n * sizeof(double *));
-    for (int i = 0; i < n; i++)
+    double **result_matrix = (double **)malloc(line_num * sizeof(double *));
+    for (int i = 0; i < line_num; i++)
     {
-        diff[i] = (double *)malloc(k * sizeof(double));
+        result_matrix[i] = (double *)malloc(k * sizeof(double));
     }
-    subtract_matrices(new_decomp_matrix, n, k, decomp_matrix, n, k, diff);
 
-    squared_norm = frob_norm_sq(diff, n, k);
-    free_2d(diff, n);
-    return squared_norm;
+    update_decomposition_matrix(initial_matrix, norm_matrix, line_num, k, epsilon, result_matrix);
+
+    free_2d((void *)initial_matrix, line_num);
+
+    return result_matrix;
 }

@@ -9,7 +9,9 @@ PyObject *convert_to_python_object(double **arr, int rows, int cols);
 /* Function to convert Python object to double** */
 double **convert_to_double_array(PyObject *obj);
 
-/* Function to return the shape of the list*/
-int *get_2d_shape(PyObject *lst);
+#define get_2d_shape(lst)              \
+    int shape[2] = {0, 0};             \
+    shape[0] = PyObject_Length((lst)); \
+    shape[1] = shape[0] > 0 ? PyObject_Length(PyObject_GetItem((lst), 0)) : 0
 
 #endif

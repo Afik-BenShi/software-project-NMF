@@ -9,11 +9,7 @@ static PyObject *sym_wrapper(PyObject *self, PyObject *args)
     {
         return NULL;
     }
-    int *shape = get_2d_shape(Py_points);
-    if (shape == NULL)
-    {
-        return NULL;
-    }
+    get_2d_shape(Py_points);
 
     /* convert to matrix */
     double **points = convert_to_double_array(Py_points);
@@ -24,7 +20,7 @@ static PyObject *sym_wrapper(PyObject *self, PyObject *args)
 
     PyObject *Py_sym = convert_to_python_object(sym_mat, shape[0], shape[0]);
     free_2d((void *)sym_mat, shape[0]);
-    free(shape);
+
     return Py_sym;
 }
 
@@ -35,12 +31,11 @@ static PyObject *ddg_wrapper(PyObject *self, PyObject *args)
     {
         return NULL;
     }
-    int *shape = get_2d_shape(Py_points);
-    if (shape == NULL)
+    get_2d_shape(Py_points);
+    if (shape[0] < 0 || shape[1] < 0)
     {
         return NULL;
     }
-
     /* convert to matrix */
     double **points = convert_to_double_array(Py_points);
 
@@ -55,7 +50,7 @@ static PyObject *ddg_wrapper(PyObject *self, PyObject *args)
     /* convert to python list */
     PyObject *Py_ddg = convert_to_python_object(ddg_mat, shape[0], shape[0]);
     free_2d((void *)ddg_mat, shape[0]);
-    free(shape);
+
     return Py_ddg;
 }
 
@@ -66,12 +61,11 @@ static PyObject *norm_wrapper(PyObject *self, PyObject *args)
     {
         return NULL;
     }
-    int *shape = get_2d_shape(Py_points);
-    if (shape == NULL)
+    get_2d_shape(Py_points);
+    if (shape[0] < 0 || shape[1] < 0)
     {
         return NULL;
     }
-
     /* convert to matrix */
     double **points = convert_to_double_array(Py_points);
 
@@ -90,20 +84,20 @@ static PyObject *norm_wrapper(PyObject *self, PyObject *args)
     /* convert to python list*/
     PyObject *Py_norm = convert_to_python_object(norm_mat, shape[0], shape[0]);
     free_2d((void *)norm_mat, shape[0]);
-    free(shape);
+
     return Py_norm;
 }
 
 static PyObject *symnmf_wrapper(PyObject *self, PyObject *args)
 {
     PyObject *Py_init_decomp, *Py_norm;
-    double epsilon;
+    double epsilon = 0.0;
     if (!PyArg_ParseTuple(args, "OOd", &Py_init_decomp, &Py_norm, epsilon))
     {
         return NULL;
     }
-    int *decomp_shape = get_2d_shape(Py_init_decomp);
-    if (decomp_shape == NULL)
+    get_2d_shape(Py_init_decomp);
+    if (shape[0] < 0 || shape[1] < 0)
     {
         return NULL;
     }
@@ -112,14 +106,14 @@ static PyObject *symnmf_wrapper(PyObject *self, PyObject *args)
     double **init_decomp_mat = convert_to_double_array(Py_init_decomp);
     double **norm_mat = convert_to_double_array(Py_norm);
 
-    double **decomp_mat = symnmf(init_decomp_mat, norm_mat, decomp_shape[0], decomp_shape[1], epsilon);
-    free_2d((void *)norm_mat, decomp_shape[0]);
-    free_2d((void *)init_decomp_mat, decomp_shape[0]);
+    double **decomp_mat = symnmf(init_decomp_mat, norm_mat, shape[0], shape[1], epsilon);
+    free_2d((void *)norm_mat, shape[0]);
+    free_2d((void *)init_decomp_mat, shape[0]);
 
     /* convert to python list*/
-    PyObject *Py_decomp = convert_to_python_object(decomp_mat, decomp_shape[0], decomp_shape[1]);
-    free_2d((void *)decomp_mat, decomp_shape[0]);
-    free(decomp_shape);
+    PyObject *Py_decomp = convert_to_python_object(decomp_mat, shape[0], shape[1]);
+    free_2d((void *)decomp_mat, shape[0]);
+
     return Py_decomp;
 }
 
@@ -159,7 +153,7 @@ static struct PyModuleDef SymNMF_Module = {
     -1,
     SymNMF_FunctionsTable};
 
-PyMODINIT_FUNC PyInit_SymNmf(void)
+PyMODINIT_FUNC PyInit_symnmf(void)
 {
     return PyModule_Create(&SymNMF_Module);
 }
