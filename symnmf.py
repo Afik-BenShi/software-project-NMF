@@ -104,6 +104,22 @@ def input_loader(filename):
 
     return [np.array((float(num) for num in line.split(","))) for line in lines]
 
+import numpy as np
+from numpy.linalg import norm
+
+
+def input_loader(filename):
+    """load input file as list of strings
+    and turns lines into list of points"""
+    try:
+        with open(filename, "r") as f:
+            lines = f.readlines()
+    except:
+        print("An Error Has Occurred")
+        sys.exit()
+
+    return [np.array((float(num) for num in line.split(","))) for line in lines]
+
 
 def main(args=sys.argv):
     if (args < 3):
