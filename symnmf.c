@@ -14,6 +14,7 @@ int main(int argc, char **argv)
         printf("%s", GENERAL_ERROR);
         exit(1);
     }
+
     goal = argv[1];
     filename = argv[2];
 
@@ -43,6 +44,15 @@ int main(int argc, char **argv)
         ddg_mat = ddg(sym_mat, line_num);
         norm_mat = norm(sym_mat, ddg_mat, line_num);
         matrix_printer(norm_mat, line_num, line_num);
+        free_2d((void *)sym_mat, line_num);
+        free_2d((void *)ddg_mat, line_num);
+        free_2d((void *)norm_mat, line_num);
+    }
+    else if (strcmp(goal, "symnmf") == 0)
+    {
+        ddg_mat = ddg(sym_mat, line_num);
+        norm_mat = norm(sym_mat, ddg_mat, line_num);
+        initial_decomp_mat = init_decomposition_matrix(norm_mat, dim, );
         free_2d((void *)sym_mat, line_num);
         free_2d((void *)ddg_mat, line_num);
         free_2d((void *)norm_mat, line_num);

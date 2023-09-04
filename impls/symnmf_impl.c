@@ -70,3 +70,22 @@ double **norm(double **sym_mat, double **ddg_mat, int line_num){
     free(inv_sqrt_ddg);
     return normalized_sym;
 }
+
+double** symnmf(double** norm_matrix, int n, int k, double epsilon) {
+    double** initial_matrix = (double**)malloc(n * sizeof(double*));
+    for (int i = 0; i < n; i++) {
+        initial_matrix[i] = (double*)malloc(k * sizeof(double));
+    }
+    init_decomposition_matrix(norm_matrix, n, k, initial_matrix);
+
+    double** result_matrix = (double**)malloc(n * sizeof(double*));
+    for (int i = 0; i < n; i++) {
+        result_matrix[i] = (double*)malloc(k * sizeof(double));
+    }
+
+    update_decomposition_matrix(initial_matrix, norm_matrix, n, k, 0.5, epsilon, result_matrix);
+
+    free_2d(initial_matrix, n);
+
+    return result_matrix;
+}

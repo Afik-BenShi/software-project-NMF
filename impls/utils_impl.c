@@ -1,5 +1,8 @@
 #include "../utils.h"
 
+int MAX_ITER = 300;
+
+
 /* ============ Array Tools ============ */
 
 /* prints a 2D matrix of doubles
@@ -122,6 +125,152 @@ double sq_distance(double *p, double *q, int dim)
 double distance(double *p, double *q, int dim){
     return sqrt(sq_distance(p, q, dim));
 }
+
+/* calculate_average return the average value of the matrix
+ * calculate_average({{1,5},{0,4}}) = 2.5 */
+double calculate_average(double** matrix, int rows, int cols) {
+    double sum = 0.0;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            sum += matrix[i][j];
+        }
+    }
+    return sum / (rows * cols);
+}
+
+void init_decomposition_matrix(double** norm_matrix, int n, int k, double** initial_matrix) {
+    double min_val = 0.0;
+    double max_val = 2.0 * sqrt(calculate_average(norm_matrix, n, n) / k);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < k; j++) {
+            initial_matrix[i][j] = (max_val - min_val) * ((double)rand() / RAND_MAX) + min_val;
+        }
+    }
+}
+
+void multiply_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result) {
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols2; j++) {
+            result[i][j] = 0.0;
+            for (int k = 0; k < cols1; k++) {
+                result[i][j] += matrix1[i][k] * matrix2[k][j];
+            }
+        }
+    }
+}
+
+void subtract_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result) {
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols1; j++) {
+            result[i][j] = matrix1[i][j] - matrix2[i][j];
+        }
+    }
+}
+
+void divide_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result) {
+    for (int i = 0; i < rows1; i++) {
+        for (int j = 0; j < cols1; j++) {
+            result[i][j] = matrix1[i][j] / matrix2[i][j];
+        }
+    }
+}
+
+void transpose_matrix(double** matrix, int rows, int cols, double** result) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result[j][i] = matrix[i][j];
+        }
+    }
+}
+
+double frob_norm(double** matrix, int rows, int cols) {
+    double sum = 0.0;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            sum += matrix[i][j] * matrix[i][j];
+        }
+    }
+    return sqrt(sum);
+}
+
+void update_decomposition_matrix(double** initial_decomp_matrix, double** norm_matrix, int n, int k, double beta, double epsilon, double** result) {
+    double** decomp_matrix = (double**)malloc(n * sizeof(double*));
+    double** new_decomp_matrix = (double**)malloc(n * sizeof(double*));
+    for (int i = 0; i < n; i++) {
+        decomp_matrix[i] = (double*)malloc(k * sizeof(double));
+        new_decomp_matrix[i] = (double*)malloc(k * sizeof(double));
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < k; j++) {
+            decomp_matrix[i][j] = initial_decomp_matrix[i][j];
+        }
+    }
+    int i = 0;
+
+    while (i < MAX_ITER) {
+        double** numerator = (double**)malloc(n * sizeof(double*));
+        double** decomp_transpose = (double**)malloc(k * sizeof(double*));
+        double** denominator = (double**)malloc(n * sizeof(double*));
+        for (int i = 0; i < n; i++) {
+            numerator[i] = (double*)malloc(k * sizeof(double));
+            denominator[i] = (double*)malloc(k * sizeof(double));
+        }
+        multiply_matrices(norm_matrix, n, n, decomp_matrix, n, k, numerator);
+        transpose_matrix(decomp_matrix, n, k, decomp_transpose);
+        multiply_matrices(decomp_matrix, n, k, decomp_transpose, k, n, denominator);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < k; j++) {
+                new_decomp_matrix[i][j] = decomp_matrix[i][j] * (1.0 - beta) + (numerator[i][j] / denominator[i][j]);
+            }
+        }
+
+        double** diff = (double**)malloc(n * sizeof(double*));
+        for (int i = 0; i < n; i++) {
+            diff[i] = (double*)malloc(k * sizeof(double));
+        }
+        subtract_matrices(new_decomp_matrix, n, k, decomp_matrix, n, k, diff);
+
+        double norm = frob_norm(diff, n, k);
+        if (norm * norm < epsilon) {
+            break;
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < k; j++) {
+                decomp_matrix[i][j] = new_decomp_matrix[i][j];
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            free(numerator[i]);
+            free(decomp_transpose[i]);
+            free(denominator[i]);
+            free(diff[i]);
+        }
+        free(numerator);
+        free(decomp_transpose);
+        free(denominator);
+        free(diff);
+
+        i++;
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < k; j++) {
+            result[i][j] = decomp_matrix[i][j];
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        free(decomp_matrix[i]);
+        free(new_decomp_matrix[i]);
+    }
+    free(decomp_matrix);
+    free(new_decomp_matrix);
+}
+
+
 
 /* ============ File Read and String Manipulation ============*/
 

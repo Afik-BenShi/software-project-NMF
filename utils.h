@@ -5,7 +5,7 @@
 # include <math.h>
 # include <string.h>
 
-#ifndef GENERAL_ERROR
+# ifndef GENERAL_ERROR
 # define GENERAL_ERROR ("An Error Has Occurred\n")
 # endif
 /* ============ Array Tools ============ */
@@ -38,6 +38,27 @@ double* sum_columns(double **arr, int rows, int cols);
 double sq_distance(double *p, double *q, int dim);
 
 double distance(double *p, double *q, int dim);
+
+/* calculate_average return the average value of the matrix
+ * calculate_average({{1,5},{0,4}}) = 2.5 */
+double calculate_average(double** matrix, int rows, int cols);
+
+void multiply_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result);
+
+void subtract_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result);
+
+void divide_matrices(double** matrix1, int rows1, int cols1, double** matrix2, int rows2, int cols2, double** result);
+
+void transpose_matrix(double** matrix, int rows, int cols, double** result);
+
+double frob_norm(double** matrix, int rows, int cols);
+
+void update_decomposition_matrix(double** initial_decomp_matrix, double** norm_matrix, int n, int k, double beta, double epsilon, double** result);
+
+void init_decomposition_matrix(double** norm_matrix, int n, int k, double** initial_matrix);
+
+
+
 
 /* ============ File Read and String Manipulation ============*/
 
