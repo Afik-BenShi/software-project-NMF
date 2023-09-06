@@ -2,12 +2,22 @@
 import sys
 import numpy as np
 import math
-import symnmfmodule
+import symnmf as symnmfmodule
 
 MAX_ITER = 300
 EPSILON = 1e-4
 ERROR_MSG = "An Error Has Occurred"
 
+def general_error_and_exit():
+    print(ERROR_MSG)
+    sys.exit()
+
+def try_float(st):
+    try:
+        return float(st)
+    except:
+        general_error_and_exit()
+        
 def init_decomposition_matrix(norm_matrix,k):
     ''' init_decomposition_matrix randomly initialize decomposition matrix with values from the interval [0, 2 * sqrt(m/k)], where m is the average of
         all entries of norm_matrix.'''
@@ -15,19 +25,10 @@ def init_decomposition_matrix(norm_matrix,k):
 
     n = len(norm_matrix)
     min_val = 0
-    max_val = 2 * (((calculate_average(norm_matrix)) / (k)) ** 0.5)
+    max_val = 2 * (((np.average(norm_matrix)) / (k)) ** 0.5)
 
     initial_matrix = np.random.uniform(min_val, max_val, size=(n, k))
     return initial_matrix
-
-def calculate_average(matrix, rows, cols):
-    '''calculate_average calculates the average of a matrix.'''
-    sum = 0.0
-    for i in range(rows):
-        for j in range(cols):
-            sum = sum + matrix[i][j]
-
-    return sum / (rows * cols)
 
 def multiply_matrices(matrix1, matrix2):
     '''multiply_matrices calculates matrix multiplication.'''
@@ -85,12 +86,7 @@ def find_decomposition_matrix(norm_matrix, k):
 def check_inputs(k, goal, input_file):
     ''' check_inputs validates the required inputs in main function.'''
     if ((not k.isnumeric()) or (not goal in ["symnmf", "sym", "ddg", "norm"]) or (not input_file.endswith(".txt"))):
-        print(ERROR_MSG)
-        sys.exit()
-
-import numpy as np
-from numpy.linalg import norm
-
+        general_error_and_exit()
 
 def input_loader(filename):
     """load input file as list of strings
@@ -99,50 +95,54 @@ def input_loader(filename):
         with open(filename, "r") as f:
             lines = f.readlines()
     except:
-        print("An Error Has Occurred")
-        sys.exit()
+        general_error_and_exit();
 
-    return [np.array((float(num) for num in line.split(","))) for line in lines]
+    return np.array([[try_float(num) for num in line.split(",")] for line in lines])
 
-import numpy as np
-from numpy.linalg import norm
-
-
-def input_loader(filename):
-    """load input file as list of strings
-    and turns lines into list of points"""
-    try:
-        with open(filename, "r") as f:
-            lines = f.readlines()
-    except:
-        print("An Error Has Occurred")
-        sys.exit()
-
-    return [np.array((float(num) for num in line.split(","))) for line in lines]
-
+def print_mat(mat):
+    lines = [",".join(row) for row in mat]
+    print("\n".join(lines))
 
 def main(args=sys.argv):
-    if (args < 3):
-        print(ERROR_MSG)
-        sys.exit()
-
+    if (len(args) < 3):
+        general_error_and_exit()
     k = args[1]
     goal = args[2]
     input_file = args[3]
+    print("args loaded")
     check_inputs(k, goal, input_file)
-
+    print("inputs checked")
+    points = input_loader(input_file)
+    print("text file loaded")
+    
+    result = [[]]
     if goal == "symnmf":
         # symnmf as described in sec 1 in the pdf
-        pass
+        print("goal symnmf")
+        norm_mat = symnmfmodule.norm(list(points))
+        print("norm calculated")
+        initial_decomp = init_decomposition_matrix(points, k)
+        print("initial calculated")
+        result = symnmfmodule.symnmf(list(initial_decomp), norm_mat)
+        print("symnmf calculated")
+
     elif goal == "sym":
         # sym as described in sec 1.1 in the pdf
-        pass
+        print("goal sym")
+        result = symnmfmodule.sym(list(points))
+        print("norm calculated")
     elif goal == "ddg":
         # ddg as described in sec 1.2 in the pdf
-        pass
+        print("goal ddg")
+        result = symnmfmodule.ddg(list(points))
+        print("norm calculated")
     elif goal == "norm":
         # norm as described in sec 1.3 in the pdf
-        pass
+        print("goal norm")
+        result = symnmfmodule.norm(list(points))
+        print("norm calculated")
+    print_mat(result)
+
 
 
 if __name__ == "__main__":
