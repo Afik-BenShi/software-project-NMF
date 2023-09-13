@@ -118,7 +118,7 @@ static PyObject *symnmf_wrapper(PyObject *self, PyObject *args)
 }
 
 /* module's function table*/
-static PyMethodDef SymNMF_FunctionsTable[] = {
+static PyMethodDef symnmfmodule_FunctionsTable[] = {
     {
         "sym",                                                                               /* name exposed to Python */
         sym_wrapper,                                                                         /* C wrapper function*/
@@ -146,14 +146,14 @@ static PyMethodDef SymNMF_FunctionsTable[] = {
     {NULL, NULL, 0, NULL}};
 
 // modules definition
-static struct PyModuleDef SymNMF_Module = {
+static struct PyModuleDef symnmfmodule_Module = {
     PyModuleDef_HEAD_INIT,
-    "symnmf",                                                                                                                           // name of module exposed to Python
+    "symnmfmodule",                                                                                                                     // name of module exposed to Python
     "Sym NMF module with functions to calculate:\n\tSimilarity matrix,\n\tDiagonam Degree matrix,\n\tand Normalied Similarity matrix ", // module documentation
     -1,
-    SymNMF_FunctionsTable};
+    symnmfmodule_FunctionsTable};
 
-PyMODINIT_FUNC PyInit_symnmf(void)
+PyMODINIT_FUNC PyInit_symnmfmodule(void)
 {
-    return PyModule_Create(&SymNMF_Module);
+    return PyModule_Create(&symnmfmodule_Module);
 }
