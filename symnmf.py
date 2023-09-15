@@ -31,7 +31,7 @@ def init_decomposition_matrix(norm_matrix, k):
     max_val = 2 * (((np.average(norm_matrix)) / (k)) ** 0.5)
 
     initial_matrix = np.random.uniform(min_val, max_val, size=(n, k))
-    return initial_matrix
+    return initial_matrix.tolist()
 
 
 def multiply_matrices(matrix1, matrix2):
@@ -109,52 +109,44 @@ def input_loader(filename):
     except:
         general_error_and_exit()
 
-    return np.array([[try_float(num) for num in line.split(",")] for line in lines])
+    return [[try_float(num) for num in line.split(",")] for line in lines]
 
 
 def print_mat(mat):
-    lines = [",".join(row) for row in mat]
+    def to_str(row): return (f"{cell:.4f}" for cell in row)
+    lines = [", ".join(to_str(row)) for row in mat]
     print("\n".join(lines))
 
 
 def main(args=sys.argv):
     if (len(args) < 3):
         general_error_and_exit()
-    k = args[1]
+    check_inputs(*args[1:4])
+    k = int(args[1])
     goal = args[2]
     input_file = args[3]
     print("args loaded")
-    check_inputs(k, goal, input_file)
     print("inputs checked")
     points = input_loader(input_file)
     print("text file loaded")
 
+    print(len(points[0]))
     result = [[]]
     if goal == "symnmf":
         # symnmf as described in sec 1 in the pdf
-        print("goal symnmf")
-        norm_mat = symnmfmodule.norm(list(points))
-        print("norm calculated")
-        initial_decomp = init_decomposition_matrix(points, k)
-        print("initial calculated")
-        result = symnmfmodule.symnmf(list(initial_decomp), norm_mat)
-        print("symnmf calculated")
+        norm_mat = symnmfmodule.norm(points)
+        initial_decomp = init_decomposition_matrix(norm_mat, k)
+        result = symnmfmodule.symnmf(initial_decomp, norm_mat, EPSILON)
 
     elif goal == "sym":
         # sym as described in sec 1.1 in the pdf
-        print("goal sym")
-        result = symnmfmodule.sym(list(points))
-        print("norm calculated")
+        result = symnmfmodule.sym(points)
     elif goal == "ddg":
         # ddg as described in sec 1.2 in the pdf
-        print("goal ddg")
-        result = symnmfmodule.ddg(list(points))
-        print("norm calculated")
+        result = symnmfmodule.ddg(points)
     elif goal == "norm":
         # norm as described in sec 1.3 in the pdf
-        print("goal norm")
-        result = symnmfmodule.norm(list(points))
-        print("norm calculated")
+        result = symnmfmodule.norm(points)
     print_mat(result)
 
 

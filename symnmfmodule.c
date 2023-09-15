@@ -91,8 +91,8 @@ static PyObject *norm_wrapper(PyObject *self, PyObject *args)
 static PyObject *symnmf_wrapper(PyObject *self, PyObject *args)
 {
     PyObject *Py_init_decomp, *Py_norm;
-    double epsilon = 0.0;
-    if (!PyArg_ParseTuple(args, "OOd", &Py_init_decomp, &Py_norm, epsilon))
+    double epsilon;
+    if (!PyArg_ParseTuple(args, "OOd", &Py_init_decomp, &Py_norm, &epsilon))
     {
         return NULL;
     }
@@ -108,7 +108,6 @@ static PyObject *symnmf_wrapper(PyObject *self, PyObject *args)
 
     double **decomp_mat = symnmf(init_decomp_mat, norm_mat, shape[0], shape[1], epsilon);
     free_2d((void *)norm_mat, shape[0]);
-    free_2d((void *)init_decomp_mat, shape[0]);
 
     /* convert to python list*/
     PyObject *Py_decomp = convert_to_python_object(decomp_mat, shape[0], shape[1]);
