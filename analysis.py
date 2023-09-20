@@ -1,7 +1,9 @@
 import sys
 import numpy as np
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
+import symnmfmodule
+import symnmf
+from sklearn.metrics import silhouette_score, pairwise_distances
+
 
 EPS = 0.001
 ITER = 200
@@ -130,26 +132,48 @@ def load_args(args):
     return K, max_iter, filename
 
 
+def general_error_and_exit():
+    print("ERROR_MSG")
+    sys.exit()
+
+
+def try_float(st):
+    try:
+        return float(st)
+    except:
+        general_error_and_exit()
+
+def symnmf_input_loader(filename):
+    """load input file as list of strings
+    and turns lines into list of points"""
+    try:
+        with open(filename, "r") as f:
+            lines = f.readlines()
+    except:
+        general_error_and_exit()
+
+    return [[try_float(num) for num in line.split(",")] for line in lines]
+
+
 def main(args=sys.argv):
     K, max_iter, filename = load_args(args)
 
+    points = symnmf_input_loader(filename)
+    norm = symnmfmodule.norm(points)
+    initial_decomp = symnmf.init_decomposition_matrix(norm, K)
+    result = symnmfmodule.symnmf(initial_decomp, norm, EPS)
+    symnmf_lables = np.argmax(result, axis=1)
+    symnmf_score = silhouette_score(np.array(points), symnmf_lables)
+    print(f"nmf: {symnmf_score:.4f}")
+
     points = lines_to_points(input_loader(filename))
-    check_num_of_clusters(K, len(points))
-
-    # Use sklearn's KMeans
-    kmeans = KMeans(n_clusters=K, max_iter=max_iter, random_state=0).fit(np.array([p.coord for p in points]))
-
-    # Get cluster assignments and cluster centers
-    cluster_assignments = kmeans.labels_
-    cluster_centers = kmeans.cluster_centers_
-
-    # Print cluster centers
-    for i, center in enumerate(cluster_centers):
-        print(f"Cluster {i} Center: {', '.join([f'{comp:.4f}' for comp in center])}")
-
-    # Calculate and print silhouette score
-    silhouette_avg = silhouette_score(np.array([p.coord for p in points]), cluster_assignments)
-    print(f"kmeans: {silhouette_avg:.4f}")
+    points_array = np.array([p.coord for p in points])
+    check_num_of_clusters(K,len(points))
+    clusters = kmeans(points, K, max_iter)
+    distances = pairwise_distances(points_array, np.array([c.center.coord for c in clusters]))
+    kmeans_lables = np.argmin(distances, axis=1)
+    kmeans_score = silhouette_score(points_array, kmeans_lables)
+    print(f"kmeans: {kmeans_score:.4f}")
 
 def check_num_of_clusters(num_of_clusters, num_of_datapoints):
     if num_of_clusters <= 1 or num_of_clusters >= num_of_datapoints:
