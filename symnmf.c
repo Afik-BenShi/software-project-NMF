@@ -25,26 +25,29 @@ int main(int argc, char **argv)
     lines = split_to_lines(file_buffer, line_num);
     points = lines_to_points(lines, line_num, dim);
 
-    sym_mat = sym(points, line_num, dim);
-    free_2d((void *)points, line_num);
     if (strcmp(goal, "sym") == 0)
     {
-        norm_mat = sym_mat;
+        sym_mat = sym(points, line_num, dim);
         matrix_printer(sym_mat, line_num, line_num);
+        free_2d((void *)points, line_num);
         free_2d((void *)sym_mat, line_num);
     }
     else if (strcmp(goal, "ddg") == 0)
     {
+        sym_mat = sym(points, line_num, dim);
         ddg_mat = ddg(sym_mat, line_num);
         matrix_printer(ddg_mat, line_num, line_num);
+        free_2d((void *)points, line_num);
         free_2d((void *)sym_mat, line_num);
         free_2d((void *)ddg_mat, line_num);
     }
     else if (strcmp(goal, "norm") == 0)
     {
+        sym_mat = sym(points, line_num, dim);
         ddg_mat = ddg(sym_mat, line_num);
         norm_mat = norm(sym_mat, ddg_mat, line_num);
         matrix_printer(norm_mat, line_num, line_num);
+        free_2d((void *)points, line_num);
         free_2d((void *)sym_mat, line_num);
         free_2d((void *)ddg_mat, line_num);
         free_2d((void *)norm_mat, line_num);

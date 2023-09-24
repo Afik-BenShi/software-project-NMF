@@ -43,11 +43,11 @@ double distance(double *p, double *q, int dim);
  * calculate_average({{1,5},{0,4}}) = 2.5 */
 double calculate_average(double **matrix, int rows, int cols);
 
-void multiply_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result);
+void multiply_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int cols2, double **result);
 
-void subtract_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result);
+void subtract_matrices(double **matrix1, int rows1, int cols1, double **matrix2, double **result);
 
-void divide_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result);
+void divide_matrices(double **matrix1, int rows1, int cols1, double **matrix2, double **result);
 
 void transpose_matrix(double **matrix, int rows, int cols, double **result);
 
