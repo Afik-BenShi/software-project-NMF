@@ -6,7 +6,7 @@ from sklearn.metrics import silhouette_score, pairwise_distances
 
 
 EPS = 0.001
-ITER = 200
+ITER = 300
 
 class Point:
     def __init__(self, coord):
