@@ -1,8 +1,8 @@
 """Python interface"""
 import sys
 import numpy as np
-import math
 import symnmfmodule
+np.random.seed(0)
 
 MAX_ITER = 300
 EPSILON = 1e-4
@@ -22,9 +22,11 @@ def try_float(st):
 
 
 def init_decomposition_matrix(norm_matrix, k):
-    ''' init_decomposition_matrix randomly initialize decomposition matrix with values from the interval [0, 2 * sqrt(m/k)], where m is the average of
-        all entries of norm_matrix.'''
-    np.random.seed(0)
+    '''
+    init_decomposition_matrix randomly initialize decomposition matrix
+    with values from the interval [0, 2 * sqrt(m/k)], where m is the average of
+    all entries of norm_matrix.
+    '''
 
     n = len(norm_matrix)
     min_val = 0
@@ -36,7 +38,11 @@ def init_decomposition_matrix(norm_matrix, k):
 
 def check_inputs(k, goal, input_file):
     ''' check_inputs validates the required inputs in main function.'''
-    if ((not k.isnumeric()) or (not goal in ["symnmf", "sym", "ddg", "norm"]) or (not input_file.endswith(".txt"))):
+    if (
+        (not k.isnumeric()) or
+        (goal not in ["symnmf", "sym", "ddg", "norm"]) or
+        (not input_file.endswith(".txt"))
+    ):
         general_error_and_exit()
 
 
@@ -54,7 +60,7 @@ def input_loader(filename):
 
 def print_mat(mat):
     def to_str(row): return (f"{cell:.4f}" for cell in row)
-    lines = [", ".join(to_str(row)) for row in mat]
+    lines = [",".join(to_str(row)) for row in mat]
     print("\n".join(lines))
 
 
@@ -65,12 +71,8 @@ def main(args=sys.argv):
     k = int(args[1])
     goal = args[2]
     input_file = args[3]
-    print("args loaded")
-    print("inputs checked")
     points = input_loader(input_file)
-    print("text file loaded")
 
-    print(len(points[0]))
     result = [[]]
     if goal == "symnmf":
         # symnmf as described in sec 1 in the pdf

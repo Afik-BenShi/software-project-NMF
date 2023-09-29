@@ -82,13 +82,14 @@ int MAX_ITER = 300;
  */
 double normedDiff(double **decomp_matrix, double **new_decomp_matrix, int n, int k)
 {
+    int i;
     double squared_norm;
     double **diff = (double **)malloc(n * sizeof(double *));
-    for (int i = 0; i < n; i++)
+    for (i = 0; i < n; i++)
     {
         diff[i] = (double *)malloc(k * sizeof(double));
     }
-    subtract_matrices(new_decomp_matrix, n, k, decomp_matrix, n, k, diff);
+    subtract_matrices(new_decomp_matrix, n, k, decomp_matrix, diff);
 
     squared_norm = frob_norm_sq(diff, n, k);
     free_2d((void *)diff, n);
@@ -127,10 +128,10 @@ void update_decomposition_matrix(double **initial_decomp_matrix, double **norm_m
     for (i = 0; i < MAX_ITER; i++)
     {
 
-        multiply_matrices(norm_matrix, n, n, decomp_matrix, n, k, numerator);
+        multiply_matrices(norm_matrix, n, n, decomp_matrix, k, numerator);
         transpose_matrix(decomp_matrix, n, k, decomp_transpose);
-        multiply_matrices(decomp_matrix, n, k, decomp_transpose, k, n, partial_denom);
-        multiply_matrices(partial_denom, n, n, decomp_matrix, n, k, denominator);
+        multiply_matrices(decomp_matrix, n, k, decomp_transpose, n, partial_denom);
+        multiply_matrices(partial_denom, n, n, decomp_matrix, k, denominator);
 
         for (i = 0; i < n; i++)
         {
@@ -181,8 +182,9 @@ void update_decomposition_matrix(double **initial_decomp_matrix, double **norm_m
 
 double **symnmf(double **initial_matrix, double **norm_matrix, int line_num, int k, double epsilon)
 {
+    int i;
     double **result_matrix = (double **)malloc(line_num * sizeof(double *));
-    for (int i = 0; i < line_num; i++)
+    for (i = 0; i < line_num; i++)
     {
         result_matrix[i] = (double *)malloc(k * sizeof(double));
     }

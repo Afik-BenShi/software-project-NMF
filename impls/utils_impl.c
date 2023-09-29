@@ -13,9 +13,9 @@ void matrix_printer(double **matrix, int rows, int cols)
         {
             if (j != 0)
             {
-                printf(", ");
+                printf(",");
             }
-            printf("%f", matrix[i][j]);
+            printf("%.4f", matrix[i][j]);
         }
         printf("\n");
     }
@@ -132,10 +132,11 @@ double distance(double *p, double *q, int dim)
  * calculate_average({{1,5},{0,4}}) = 2.5 */
 double calculate_average(double **matrix, int rows, int cols)
 {
+    int i, j;
     double sum = 0.0;
-    for (int i = 0; i < rows; i++)
+    for (i = 0; i < rows; i++)
     {
-        for (int j = 0; j < cols; j++)
+        for (j = 0; j < cols; j++)
         {
             sum += matrix[i][j];
         }
@@ -143,14 +144,15 @@ double calculate_average(double **matrix, int rows, int cols)
     return sum / (rows * cols);
 }
 
-void multiply_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result)
+void multiply_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int cols2, double **result)
 {
-    for (int i = 0; i < rows1; i++)
+    int i, j, k;
+    for (i = 0; i < rows1; i++)
     {
-        for (int j = 0; j < cols2; j++)
+        for (j = 0; j < cols2; j++)
         {
             result[i][j] = 0.0;
-            for (int k = 0; k < cols1; k++)
+            for (k = 0; k < cols1; k++)
             {
                 result[i][j] += matrix1[i][k] * matrix2[k][j];
             }
@@ -158,22 +160,24 @@ void multiply_matrices(double **matrix1, int rows1, int cols1, double **matrix2,
     }
 }
 
-void subtract_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result)
+void subtract_matrices(double **matrix1, int rows1, int cols1, double **matrix2, double **result)
 {
-    for (int i = 0; i < rows1; i++)
+    int i, j;
+    for (i = 0; i < rows1; i++)
     {
-        for (int j = 0; j < cols1; j++)
+        for (j = 0; j < cols1; j++)
         {
             result[i][j] = matrix1[i][j] - matrix2[i][j];
         }
     }
 }
 
-void divide_matrices(double **matrix1, int rows1, int cols1, double **matrix2, int rows2, int cols2, double **result)
+void divide_matrices(double **matrix1, int rows1, int cols1, double **matrix2, double **result)
 {
-    for (int i = 0; i < rows1; i++)
+    int i, j;
+    for (i = 0; i < rows1; i++)
     {
-        for (int j = 0; j < cols1; j++)
+        for (j = 0; j < cols1; j++)
         {
             result[i][j] = matrix1[i][j] / matrix2[i][j];
         }
@@ -182,9 +186,10 @@ void divide_matrices(double **matrix1, int rows1, int cols1, double **matrix2, i
 
 void transpose_matrix(double **matrix, int rows, int cols, double **result)
 {
-    for (int i = 0; i < rows; i++)
+    int i, j;
+    for (i = 0; i < rows; i++)
     {
-        for (int j = 0; j < cols; j++)
+        for (j = 0; j < cols; j++)
         {
             result[j][i] = matrix[i][j];
         }
@@ -193,10 +198,11 @@ void transpose_matrix(double **matrix, int rows, int cols, double **result)
 
 double frob_norm_sq(double **matrix, int rows, int cols)
 {
+    int i, j;
     double sum = 0.0;
-    for (int i = 0; i < rows; i++)
+    for (i = 0; i < rows; i++)
     {
-        for (int j = 0; j < cols; j++)
+        for (j = 0; j < cols; j++)
         {
             sum += matrix[i][j] * matrix[i][j];
         }
