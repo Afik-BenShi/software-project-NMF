@@ -14,7 +14,7 @@ out:
 
 # creates the app
 symnmf_app: $(OUT)/symnmf.o $(OUT)/symnmf_impl.o $(OUT)/utils_impl.o symnmf.h utils.h
-	gcc -o symnmf $(OUT)/symnmf.o $(OUT)/symnmf_impl.o $(OUT)/utils_impl.o $(CFLAGS)
+	gcc -o symnmf $(OUT)/symnmf.o $(OUT)/symnmf_impl.o $(OUT)/utils_impl.o $(CFLAGS) -lm
 
 $(OUT)/symnmf.o: symnmf.c symnmf.h utils.h
 	gcc -c symnmf.c -o $(OUT)/symnmf.o $(CFLAGS)

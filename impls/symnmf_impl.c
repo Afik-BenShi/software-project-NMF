@@ -1,4 +1,5 @@
 #include "../symnmf.h"
+#include "math.h"
 
 double **sym(double **points, int line_num, int dim)
 {
@@ -14,8 +15,7 @@ double **sym(double **points, int line_num, int dim)
 
         for (j = 0; j < line_num; j++)
         {
-            A[i][j] = i != j ? exp(-sq_distance(points[i], points[j], dim) / 2)
-                             : 0;
+            A[i][j] = i != j ? exp(-sq_distance(points[i], points[j], dim) / 2) : 0;
         }
     }
     return A;
