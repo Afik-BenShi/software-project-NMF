@@ -1,4 +1,4 @@
-CFLAGS = -ansi -Wall -Wextra -Werror -pedantic-errors
+CFLAGS = -ansi -Wall -Wextra -Werror -pedantic-errors -lm
 # compiled binaries directory
 OUT = .out
 
