@@ -219,6 +219,8 @@ char *read_file(char *filename)
 {
     char *buffer;
     long size;
+    size_t result;
+
     FILE *file = NULL;
     file = fopen(filename, "r");
     pointer_check((void *)file, GENERAL_ERROR);
@@ -232,7 +234,12 @@ char *read_file(char *filename)
     pointer_check((void *)buffer, GENERAL_ERROR);
 
     /* read and save to buffer*/
-    fread(buffer, size, 1, file);
+    result = fread(buffer, size, 1, file);
+    if (result != 1) {
+        printf("%s", GENERAL_ERROR);
+        exit(1);
+    }
+
     buffer[size] = '\0';
 
     fclose(file);
